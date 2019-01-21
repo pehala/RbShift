@@ -105,12 +105,17 @@ module RbShift
       log.debug("[EXEC] Executing command #{command} with opts: #{opts}")
       oc_cmd = oc_command(command, *args, **opts)
       stdout, stderr, stat = Open3.capture3(oc_cmd)
-      unless stderr.empty? && stat.success?
+      unless stat.success?
         log.error oc_command(command, *args, exclude_token: true, **opts)
         log.error "Command failed with status #{stat.exitstatus} -->"
         log.debug "Standard Output: #{stdout}"
         log.error "Error Output: #{stderr}"
         raise InvalidCommandError, "ERROR: #{stdout} #{stderr}"
+      end
+      unless stderr.empty?
+        log.warn "Command succeeded with status #{stat.exitstatus}, but stderr is not empty -->"
+        log.debug "Standard Output: #{stdout}"
+        log.warn "Error Output: #{stderr}"
       end
     end
 
@@ -137,7 +142,7 @@ module RbShift
     # rubocop:disable  Metrics/LineLength
     def oc_command(command, *args, exclude_token: false, **opts)
       token = exclude_token ? '***' : @token
-      "oc --server=\"#{@url}\" --token=\"#{token}\" #{command} #{unfold_opts opts} #{unfold_args args}"
+      "oc --server=\"#{@url}\" --token=\"#{token}\" #{command} #{unfold_args args} #{unfold_opts opts}"
     end
     # rubocop:enable  Metrics/LineLength
 

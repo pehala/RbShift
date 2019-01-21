@@ -7,6 +7,7 @@ require_relative 'pod'
 require_relative 'secret'
 require_relative 'service'
 require_relative 'template'
+require_relative 'build_config'
 require_relative 'role_binding'
 
 module RbShift
@@ -51,6 +52,11 @@ module RbShift
     def role_bindings(update = false)
       @_role_bindings = init_objects(RoleBinding) if update || @_role_bindings.nil?
       @_role_bindings
+    end
+
+    def build_configs(update = false)
+      @_build_configs = init_objects(BuildConfig) if update || @_build_configs.nil?
+      @_build_configs
     end
 
     def routes(update = false)

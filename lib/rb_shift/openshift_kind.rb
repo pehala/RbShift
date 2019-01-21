@@ -38,7 +38,7 @@ module RbShift
       invalidate unless self_only
     end
 
-    def update(patch = nil)
+    def update(patch = nil, type = 'strategic')
       if patch
         @parent.invalidate
       else
@@ -46,11 +46,11 @@ module RbShift
       end
 
       log.info "Updating #{self.class.class_name} #{name}"
-      execute "patch #{self.class.class_name} #{name} -p #{patch.shellescape}"
+      execute "patch #{self.class.class_name} #{name} -p #{patch.shellescape}", :type => type
     end
 
-    def execute(command, **opts)
-      parent.execute(command, **opts) if parent.respond_to? :execute
+    def execute(command, *args, **opts)
+      parent.execute(command, *args, **opts) if parent.respond_to? :execute
     end
 
     def delete
